@@ -3,14 +3,16 @@
 FROM node:20 AS builder
 WORKDIR /app
 
-# Install root deps and frontend deps
+# Install root deps
 COPY package*.json ./
-COPY frontend/package*.json ./frontend/
-RUN npm install && npm install --prefix frontend
+RUN npm install
 
-# Copy source and build frontend
-COPY . .
-RUN npm run build --prefix frontend
+# Copy frontend sources and install/build
+COPY frontend ./frontend
+RUN npm install --prefix frontend && npm run build --prefix frontend
+
+# Copy backend sources
+COPY backend ./backend
 
 # Runtime image
 FROM node:20-alpine AS runner
@@ -21,8 +23,9 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm install --omit=dev
 
-# Copy built app
-COPY --from=builder /app .
+# Copy built artifacts and backend into runtime
+COPY --from=builder /app/backend ./backend
+COPY --from=builder /app/frontend/dist ./frontend/dist
 
 # Expose port
 EXPOSE 5000

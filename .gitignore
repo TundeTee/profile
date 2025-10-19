@@ -1,0 +1,16 @@
+# Node
+node_modules/
+frontend/node_modules/
+
+# Env & logs
+.env
+*.log
+
+# Build outputs
+frontend/dist/
+
+# OS/Editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
